@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import userRoute from "./routes/userRoutes.js"
 
+
 dotenv.config();
 
 const app = express();
@@ -10,7 +11,7 @@ app.use(express.json());
 
 app.use("/api", userRoute);
 
-const PORT = process.env.PORT || 7000 || 4000;
+const PORT = process.env.PORT || 7000;
 const mongoURL = process.env.MONGO_URL;
 
 // mongoose.connect(mongoURL)
