@@ -1,4 +1,7 @@
+import axios from 'axios';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 function AddUser() {
   const [formData, setFormData] = useState({
@@ -6,6 +9,8 @@ function AddUser() {
     email: '',
     address: ''
   });
+
+  const navigate = useNavigate(); // Hook to navigate programmatically
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -15,16 +20,47 @@ function AddUser() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('User Added:', formData);
-    // You can add your API call here
-    setFormData({ name: '', email: '', address: '' });
+
+    try {
+      await axios.post("http://localhost:8000/api/user", formData);
+      toast.success("User added successfully!", {
+        position: "top-right",
+        autoClose: 3000
+      });
+      setFormData({ name: '', email: '', address: '' });
+
+      navigate("/");
+
+    } catch (error) {
+      toast.error("❌ Failed to add user!", {
+        position: "top-right",
+        autoClose: 3000
+      });
+      console.error("Error adding user:", error);
+    }
+  };
+
+
+  const goToHome = () => {
+    navigate('/');
   };
 
   return (
     <div className="max-w-md mx-auto mt-10 bg-white shadow-xl rounded-xl p-8">
+      {/* Go to home page button */}
+      <div className="mb-4">
+        <button
+          onClick={goToHome}
+          className="text-sm bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md border border-gray-300 transition cursor-pointer"
+        >
+          ⬅ Go to Home
+        </button>
+      </div>
+
       <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Add New User</h2>
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-gray-700 font-medium mb-1">Name :</label>
@@ -63,7 +99,7 @@ function AddUser() {
         </div>
         <button
           type="submit"
-          className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition duration-300"
+          className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition duration-300 cursor-pointer"
         >
           Add User
         </button>
