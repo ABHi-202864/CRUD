@@ -10,7 +10,42 @@ function AddUser() {
     address: ''
   });
 
-  const navigate = useNavigate(); // Hook to navigate programmatically
+  const [errors, setErrors] = useState({
+    name: '',
+    email: '',
+    address: ''
+  });
+
+  const navigate = useNavigate();
+
+  const validateForm = () => {
+    let isValid = true;
+    const newErrors = { name: '', email: '', address: '' };
+
+    // Validate name (not empty and not just whitespace)
+    if (!formData.name.trim()) {
+      newErrors.name = 'Name is required';
+      isValid = false;
+    }
+
+    // Validate email (not empty and valid format)
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+      isValid = false;
+    } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
+      newErrors.email = 'Email is invalid';
+      isValid = false;
+    }
+
+    // Validate address (not empty and not just whitespace)
+    if (!formData.address.trim()) {
+      newErrors.address = 'Address is required';
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -18,10 +53,22 @@ function AddUser() {
       ...prev,
       [name]: value
     }));
+
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
 
     try {
       await axios.post("http://localhost:8000/api/user", formData);
@@ -30,11 +77,10 @@ function AddUser() {
         autoClose: 3000
       });
       setFormData({ name: '', email: '', address: '' });
-
       navigate("/");
 
     } catch (error) {
-      toast.error("❌ Failed to add user!", {
+      toast.error("Failed to add user!", {
         position: "top-right",
         autoClose: 3000
       });
@@ -42,14 +88,12 @@ function AddUser() {
     }
   };
 
-
   const goToHome = () => {
     navigate('/');
   };
 
   return (
     <div className="max-w-md mx-auto mt-10 bg-white shadow-xl rounded-xl p-8">
-      {/* Go to home page button */}
       <div className="mb-4">
         <button
           onClick={goToHome}
@@ -69,10 +113,10 @@ function AddUser() {
             name="name"
             value={formData.name}
             onChange={handleChange}
-            required
             placeholder="John Doe"
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className={`w-full px-4 py-2 border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400`}
           />
+          {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
         </div>
         <div>
           <label className="block text-gray-700 font-medium mb-1">Email :</label>
@@ -81,10 +125,10 @@ function AddUser() {
             name="email"
             value={formData.email}
             onChange={handleChange}
-            required
             placeholder="john@example.com"
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className={`w-full px-4 py-2 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400`}
           />
+          {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
         </div>
         <div>
           <label className="block text-gray-700 font-medium mb-1">Address :</label>
@@ -92,10 +136,10 @@ function AddUser() {
             name="address"
             value={formData.address}
             onChange={handleChange}
-            required
             placeholder="123, Elm Street"
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className={`w-full px-4 py-2 border ${errors.address ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400`}
           ></textarea>
+          {errors.address && <p className="text-red-500 text-sm mt-1">{errors.address}</p>}
         </div>
         <button
           type="submit"
