@@ -20,7 +20,7 @@ function UpdateUser() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get(`${api}/user/${id}`);
+        const res = await axios.get(`${api}/api/user/${id}`);
         setFormData(res.data); // 👈 Set form values with existing user
 
       } catch (error) {
@@ -44,7 +44,7 @@ function UpdateUser() {
     e.preventDefault();
 
     try {
-      await axios.put(`${api}/update/user/${id}`, formData);
+      await axios.put(`${api}/api/update/user/${id}`, formData);
       toast.success("User updated successfully!", {
         position: "top-right",
         autoClose: 3000
