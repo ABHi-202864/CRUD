@@ -14,7 +14,7 @@ function User() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${api}/users`);
+        const response = await axios.get(`${api}/api/users`);
 
         setUsers(response.data);
 
@@ -29,7 +29,7 @@ function User() {
 
   const handleDelete = async (userId) => {
     try {
-      await axios.delete(`${api}/delete/user/${userId}`);
+      await axios.delete(`${api}/api/delete/user/${userId}`);
       toast.success("User deleted successfully!");
       setUsers((prevUsers) => prevUsers.filter((user) => user._id !== userId));
 
