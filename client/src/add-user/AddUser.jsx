@@ -1,7 +1,8 @@
 import axios from 'axios';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import AppContext from '../context/AppContext.jsx';
 
 function AddUser() {
   const [formData, setFormData] = useState({
@@ -15,6 +16,9 @@ function AddUser() {
     email: '',
     address: ''
   });
+
+  const { backendUrl } = useContext(AppContext);
+  const api = backendUrl.replace(/\/$/, "");
 
   const navigate = useNavigate();
 
@@ -71,7 +75,7 @@ function AddUser() {
     }
 
     try {
-      await axios.post("http://localhost:8000/api/user", formData);
+      await axios.post(`${api}/api/user`, formData);
       toast.success("User added successfully!", {
         position: "top-right",
         autoClose: 3000

@@ -1,7 +1,8 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import AppContext from '../context/AppContext.jsx';
 
 function UpdateUser() {
   const [formData, setFormData] = useState({
@@ -10,13 +11,16 @@ function UpdateUser() {
     address: ''
   });
 
+  const { backendUrl } = useContext(AppContext);
+  const api = backendUrl.replace(/\/$/, "");
+
   const navigate = useNavigate(); // Hook to navigate programmatically
   const { id } = useParams(); // 👈 Grab user ID from URL
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get(`http://localhost:8000/api/user/${id}`);
+        const res = await axios.get(`${api}/user/${id}`);
         setFormData(res.data); // 👈 Set form values with existing user
 
       } catch (error) {
@@ -26,7 +30,7 @@ function UpdateUser() {
     };
 
     fetchUser();
-  }, [id]);
+  }, [api, id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -40,7 +44,7 @@ function UpdateUser() {
     e.preventDefault();
 
     try {
-      await axios.put(`http://localhost:8000/api/update/user/${id}`, formData);
+      await axios.put(`${api}/update/user/${id}`, formData);
       toast.success("User updated successfully!", {
         position: "top-right",
         autoClose: 3000
